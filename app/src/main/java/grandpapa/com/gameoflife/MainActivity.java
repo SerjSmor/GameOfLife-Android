@@ -2,6 +2,10 @@ package grandpapa.com.gameoflife;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,16 +18,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         Game gameOfLife = new Game(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         gameOfLife.init();
         int w = getWindowManager().getDefaultDisplay().getWidth();
         int h = getWindowManager().getDefaultDisplay().getHeight();
-//        GameView gameView = new GameView(this, gameOfLife, CELL_SIZE, w, h);
         gameView = new GameView(this, w, h, gameOfLife);
-        setContentView(gameView);
 
+        FrameLayout game = new FrameLayout(this);
+        LinearLayout gameWidgets = new LinearLayout (this);
+        gameWidgets.setOrientation(LinearLayout.HORIZONTAL);
+        Button startGameButton = new Button(this);
 
+        gameWidgets.addView(startGameButton);
 
+        game.addView(gameView);
+        game.addView(gameWidgets);
+
+        setContentView(game);
     }
 
     @Override
