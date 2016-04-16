@@ -9,6 +9,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="grandpapa.com.gameoflife.MainActivity">
 
+    <FrmaeLayout>
 
+
+    </FrmaeLayout>
 
 </RelativeLayout>
