@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
         startButtonParam.addRule(RelativeLayout.ALIGN_PARENT_LEFT, RelativeLayout.TRUE);
         startButtonParam.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-        stepButtonParams.addRule(RelativeLayout.ALIGN_RIGHT, START_BUTTON_ID);
+        stepButtonParams.addRule(RelativeLayout.ALIGN_BOTTOM, START_BUTTON_ID);
+        stepButtonParams.addRule(RelativeLayout.RIGHT_OF, START_BUTTON_ID);
 
         gameWidgets.addView(startButton);
         gameWidgets.addView(stepButton);
