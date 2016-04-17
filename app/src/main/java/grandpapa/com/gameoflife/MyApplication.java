@@ -10,8 +10,9 @@ public class MyApplication extends Application {
 
     private static final String TAG = MyApplication.class.getSimpleName();
 
-    public void onCreate ()
+    public void onCreate()
     {
+        super.onCreate();
         Thread.setDefaultUncaughtExceptionHandler (new Thread.UncaughtExceptionHandler()
         {
             @Override

@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -143,12 +144,6 @@ public class GameView extends SurfaceView implements Runnable {
             // required in SurfaceView
             canvas = ourHolder.lockCanvas();
 
-            canvas.drawRect(buttonStep, buttonStyle);
-            canvas.drawText("Step", buttonStep.centerX(), buttonStep.centerY(), textStyle);
-            //draw next button
-            canvas.drawRect(buttonStart, buttonStyle);
-            canvas.drawText("Start", screenWidth/3, (float)(screenHeight*8/10 - 20), textStyle);//how to make in middle
-
             for(int i = 0; i <= myGame.width; i++) {
                 float startX = leftGrid;
                 float startY = (cellSize + LINE_WIDTH) * i + topGrid;
@@ -182,12 +177,8 @@ public class GameView extends SurfaceView implements Runnable {
                     canvas.drawRect(myRect, recStyle);
                 }
             }
-
             ourHolder.unlockCanvasAndPost(canvas);
-
         }
-
-
     }
 
     public void pause() {
@@ -210,55 +201,53 @@ public class GameView extends SurfaceView implements Runnable {
         gameThread.start();
     }
 
+    public void step() {
+        isPlaying = false;
+        myGame.step();
+        draw();
+    }
+
+    public void start() {
+        isPlaying = true;
+    }
+
     public boolean onTouchEvent(MotionEvent event) {
+        float x = event.getX();
+        float y = event.getY();
+
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                float x = event.getX();
-                float y = event.getY();
+                setCellIfPressed(x, y);
 
-                if(buttonStep.contains((int) x, (int) y)){
-                    isPlaying = false;
-                    myGame.step();
-                    draw();
-                }
-                else if(buttonStart.contains((int) x, (int) y)){
-                    isPlaying = true;
-                }
-                // grid check
-                // TODO same code twice
-                else if (y<(height+topGrid-LINE_WIDTH)&&(y>leftGrid)&&(x>leftGrid)&&(x < width+leftGrid - LINE_WIDTH )){
-                    int posX = (int)Math.floor((x - leftGrid) / ((cellSize + LINE_WIDTH)));
-                    int posY = (int)Math.floor((y - topGrid)/((cellSize+LINE_WIDTH)));
-                    Log.d(TAG, "x: " + x + " y: " + y);
-                    Log.d(TAG, "xx: " + posX +" yy: " + posY);
-                    Log.d(TAG, String.valueOf(leftGrid));
-                    Log.d(TAG, String.valueOf(cellSize));
-                    Log.d(TAG, String.valueOf(width));
-                    Log.d(TAG, String.valueOf(screenWidth));
-                    myGame.setCell(posX, posY, true);
-                    draw();
-
-                }
+                break;
             case MotionEvent.ACTION_MOVE: {
                 // Find the index of the active pointer and fetch its position
-                x = event.getX();
-                y = event.getY();
-                if (y<(height+topGrid-LINE_WIDTH)&&(y>leftGrid)&&(x>leftGrid)&&(x < width+leftGrid - LINE_WIDTH )){
-                    int posX = (int)Math.floor((x - leftGrid) / ((cellSize + LINE_WIDTH)));
-                    int posY = (int)Math.floor((y - topGrid)/((cellSize+LINE_WIDTH)));
-                    Log.d(TAG, "x: " + x + " y: " + y);
-                    Log.d(TAG, "xx: " + posX +" yy: " + posY);
-                    Log.d(TAG, String.valueOf(leftGrid));
-                    Log.d(TAG, String.valueOf(cellSize));
-                    Log.d(TAG, String.valueOf(width));
-                    Log.d(TAG, String.valueOf(screenWidth));
-                    myGame.setCell(posX, posY, true);
-                    draw();
-                }
+                setCellIfPressed(x, y);
                 break;
             }
         }
         return true;
     }
 
+    private void setCellIfPressed(float x, float y) {
+        // grid check
+        if (isGridCellPressed(x,y)) {
+
+            Pair<Integer, Integer> xy = calcIntXY(x,y);
+            myGame.setCell(xy.first, xy.second, true);
+        }
+        if (!isPlaying) {
+            draw();
+        }
+    }
+
+    private boolean isGridCellPressed(float x, float y) {
+        return (y<(height+topGrid-LINE_WIDTH)&&(y>leftGrid)&&(x>leftGrid)&&(x < width+leftGrid - LINE_WIDTH ));
+    }
+
+    private Pair<Integer, Integer> calcIntXY(float x, float y) {
+        int posX = (int)Math.floor((x - leftGrid) / ((cellSize + LINE_WIDTH)));
+        int posY = (int)Math.floor((y - topGrid)/((cellSize+LINE_WIDTH)));
+        return new Pair<Integer, Integer>(posX, posY);
+    }
 }
